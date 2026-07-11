@@ -7,7 +7,7 @@ and adds newly discovered public sale/planning signals for human verification.
 from __future__ import annotations
 
 import hashlib, json, math, os, re, time
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from urllib.parse import quote_plus
 from urllib.request import Request, urlopen
@@ -101,6 +101,30 @@ def discover() -> list[dict]:
                     "baseScore": 62 + (10 if PAIN_TERMS.search(text) else 0), "autoDiscovered": True,
                 })
         except Exception as e: print(f"search failed: {e}")
+    try:
+        since = (datetime.now(timezone.utc) - timedelta(days=120)).date().isoformat().split('-')
+        url = ("https://www.planning.data.gov.uk/entity.json?dataset=planning-application&q=pool"
+               f"&start_date_year={since[0]}&start_date_month={int(since[1])}&start_date_day={int(since[2])}"
+               "&start_date_match=since&limit=100")
+        body = json.loads(fetch(url))
+        for entity in body.get("entities", []):
+            raw = json.dumps(entity, ensure_ascii=False)
+            if not POOL_TERMS.search(raw): continue
+            address = entity.get("address-text") or entity.get("name") or "Recent pool planning application"
+            ref = entity.get("reference") or entity.get("entity") or ""
+            found.append({
+                "id": "planning-" + hashlib.sha1(str(ref).encode()).hexdigest()[:12],
+                "prospect": str(address)[:120], "area": entity.get("local-authority-district") or "Verify",
+                "postcode": entity.get("postcode") or "", "county": "Verify",
+                "signal": "Recent planning application mentioning a pool.",
+                "pain": "Active pool project may need feasibility, plant specification, construction or aftercare.",
+                "offer": "Pool Feasibility & Technical Review", "whyNow": "Application submitted within the last 120 days.",
+                "route": "Planning agent / architect", "angle": "Offer specialist pool input before technical decisions and budgets are locked.",
+                "action": "Open the planning record, identify the project professional and qualify the scope.",
+                "url": f"https://www.planning.data.gov.uk/entity/{entity.get('entity')}", "baseScore": 76,
+                "autoDiscovered": True,
+            })
+    except Exception as e: print(f"planning discovery failed: {e}")
     return found
 
 def main():

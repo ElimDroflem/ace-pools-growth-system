@@ -63,7 +63,7 @@
 
   async function init() {
     try {
-      const response=await fetch('data/leads.json',{cache:'no-store'}); if(!response.ok) throw new Error('Lead data unavailable'); payload=await response.json();
+      const response=await fetch('data/leads.json'); if(!response.ok) throw new Error('Lead data unavailable'); payload=await response.json();
       map=L.map('leadMap',{scrollWheelZoom:true}).setView([payload.centre.latitude,payload.centre.longitude],9);
       L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:18,attribution:'&copy; OpenStreetMap contributors'}).addTo(map);
       L.circleMarker([payload.centre.latitude,payload.centre.longitude],{radius:9,color:'#082536',weight:4,fillColor:'#c7f36b',fillOpacity:1}).addTo(map).bindPopup('<strong>Comberton</strong><br>Ace Pools territory centre');

@@ -58,10 +58,13 @@
     $('dealEvidence').href = l.url || '#';
     $('dealEvidence').style.display = l.url ? 'inline-flex' : 'none';
     $('dealStatus').value = l.status || 'New lead'; $('dealPriority').value = l.priority || 'Medium';
+    $('dealContactName').value = l.contactName || ''; $('dealContactRoute').value = l.contactRoute || ''; $('dealContactConfidence').value = l.contactConfidence || 'Unverified';
     $('dealPhone').value = l.phone || ''; $('dealEmail').value = l.email || '';
     $('dealNextAction').value = l.nextAction || 'Make first contact and offer Pool Review'; $('dealNextDate').value = l.nextDate || tomorrow();
     $('dealOutcome').value = ''; $('dealInteraction').value = ''; $('dealHistory').value = l.history || '';
     $('scriptType').value = l.status === 'New lead' ? 'opening' : 'followup'; showScript();
+    $('startReview').href = `review.html?lead=${encodeURIComponent(l.id)}`;
+    $('researchLead').href = `https://www.google.com/search?q=${encodeURIComponent(`${l.name} ${l.postcode||''} owner estate agent architect contact`)}`;
     updateContactLinks(); $('dealDialog').showModal();
   }
 
@@ -81,13 +84,13 @@
   $('dealForm').onsubmit = e => {
     if (e.submitter?.value === 'cancel') return;
     const l = lead(); if (!l) return;
-    l.status = $('dealStatus').value; l.priority = $('dealPriority').value; l.phone = $('dealPhone').value.trim(); l.email = $('dealEmail').value.trim(); l.nextAction = $('dealNextAction').value.trim(); l.nextDate = $('dealNextDate').value;
+    l.status = $('dealStatus').value; l.priority = $('dealPriority').value; l.contactName = $('dealContactName').value.trim(); l.contactRoute = $('dealContactRoute').value; l.contactConfidence = $('dealContactConfidence').value; l.phone = $('dealPhone').value.trim(); l.email = $('dealEmail').value.trim(); l.nextAction = $('dealNextAction').value.trim(); l.nextDate = $('dealNextDate').value;
     const note = $('dealInteraction').value.trim(), outcome = $('dealOutcome').value;
     if (note || outcome) { const stamp = new Date().toLocaleString('en-GB'); l.history = `[${stamp}] ${outcome}${outcome && note ? ' – ' : ''}${note}\n${l.history || ''}`; }
     save(); setTimeout(render, 0);
   };
   $('removeDeal').onclick = () => { if (confirm('Remove this deal from the pipeline?')) { leads = leads.filter(x => String(x.id) !== String(activeId)); save(); $('dealDialog').close(); render(); } };
-  $('exportCsv').onclick = () => { const keys = ['name','postcode','phone','email','source','status','priority','nextAction','nextDate','whyNow','pain','offer','angle','energySignal','ownershipSignal','url','history']; const csv = [keys.join(','), ...leads.map(l => keys.map(k => `"${String(l[k] || '').replace(/"/g, '""')}"`).join(','))].join('\n'); const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], {type:'text/csv'})); a.download = 'ace-pools-deals.csv'; a.click(); URL.revokeObjectURL(a.href); };
+  $('exportCsv').onclick = () => { const keys = ['name','postcode','contactName','contactRoute','contactConfidence','phone','email','source','status','priority','nextAction','nextDate','whyNow','pain','offer','angle','energySignal','ownershipSignal','url','history']; const csv = [keys.join(','), ...leads.map(l => keys.map(k => `"${String(l[k] || '').replace(/"/g, '""')}"`).join(','))].join('\n'); const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], {type:'text/csv'})); a.download = 'ace-pools-deals.csv'; a.click(); URL.revokeObjectURL(a.href); };
   $('importCsv').onchange = e => { const f = e.target.files[0]; if (!f) return; const reader = new FileReader(); reader.onload = () => { const lines = reader.result.split(/\r?\n/).filter(Boolean), headers = parse(lines.shift()); for (const line of lines) { const vals = parse(line), obj = { id: Date.now() + Math.random(), status:'New lead', priority:'Medium', nextAction:'Review imported record', nextDate:tomorrow() }; headers.forEach((h,i) => obj[h.trim()] = vals[i] || ''); leads.push(obj); } save(); render(); }; reader.readAsText(f); };
   function parse(line) { const out=[]; let v='', q=false; for(let i=0;i<line.length;i++){const c=line[i]; if(c==='"'&&line[i+1]==='"'){v+='"';i++;}else if(c==='"')q=!q;else if(c===','&&!q){out.push(v);v='';}else v+=c;} out.push(v); return out; }
   render(); const requested = new URLSearchParams(location.search).get('lead'); if (requested) setTimeout(() => openDeal(requested), 0);

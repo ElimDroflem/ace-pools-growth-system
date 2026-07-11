@@ -1,37 +1,40 @@
-# Ace Pools growth-system handover
+# Ace Pools sales operating system
 
-Start with `index.html`, then open `templates/start-here.html`.
+Live home: `https://elimdroflem.github.io/ace-pools-growth-system/`
 
-## Included
+## Alex's daily process
 
-- Customer-facing Pool Safety & Running Cost Check
-- Safety, cost-waste and equipment-risk scoring
-- WhatsApp and telephone conversion actions
-- Browser-based lead pipeline with CSV import/export
-- Public-signal lead ranking tool
-- Historic-customer CSV import template
-- Door-drop campaign letter
-- Daily operating guide
-- Outreach and objection scripts
-- Pool Review form
-- PoolCare quotation template
-- Customer-onboarding checklist
-- Service-visit report
+1. Open **Today** and complete overdue follow-ups.
+2. Open **Lead Map** and add the strongest new leads.
+3. Use **Field Mode** when working a local hotspot.
+4. Open the lead's sales brief and aim to book the complimentary Pool Review.
+5. Complete **Pool Review** on site.
+6. Create the proposal, save it as PDF and mark it sent.
+7. Keep a dated next action until the opportunity is won or lost.
 
-## Before a live campaign
+## Warm leads
 
-1. Confirm the final package prices, service radius and commercial terms.
-2. Deploy the folder to a secure web host.
-3. Connect the Pool Check form to the chosen CRM or form backend.
-4. Print-test the supplied door-drop QR code once GitHub Pages is enabled.
-5. Replace the sample dashboard leads with verified records.
-6. Check privacy information, permissions, objections and the lawful contact route.
-7. Test one complete journey on a phone: QR scan, check, result, Alex notification, booking, review, quote and onboarding.
+Use **Historic Customers** to import Ace Pools' previous projects. The required CSV template is included in `templates/historic-customer-import.csv`.
 
-## Data note
+## Cloud mode
 
-The current dashboard stores data in the browser and supports CSV backups. A hosted multi-device CRM connection is required before using it as the sole production record.
+Local mode works immediately. Cloud mode requires a free Supabase project:
 
-## Recommended live URL
+1. Run `supabase-schema.sql` in the Supabase SQL editor.
+2. Put the project URL and public anon key into `data/public-config.json` before publishing.
+3. Open **Cloud** in the platform, enter the same URL/key and Alex's email.
+4. Use the secure email link to sign in, then upload this device.
 
-`https://elimdroflem.github.io/ace-pools-growth-system/pool-check.html`
+Cloud mode synchronises leads and reviews across Alex's devices and receives public QR Pool Check enquiries. The anon key is designed for browser use; row-level security in the supplied schema protects private sales data.
+
+## Core tools
+
+- `today.html` — daily priorities and overdue actions
+- `lead-map.html` — ranked leads and hotspots
+- `reactivate.html` — previous-customer importer
+- `canvass.html` — mobile door-knocking workflow
+- `dashboard.html` — intelligence, scripts and pipeline
+- `review.html` — on-site Pool Review
+- `proposal.html` — customer proposal
+- `inquiries.html` — new QR responses
+- `sync.html` — secure multi-device connection

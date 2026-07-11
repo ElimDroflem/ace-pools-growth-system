@@ -6,7 +6,8 @@
     let leads = JSON.parse(localStorage.getItem('acePoolLeads') || '[]');
     let existing = leads.find(l => l.sourceId === x.id || l.url === x.url);
     if (!existing) {
-      existing = { id:'map-'+x.id, sourceId:x.id, created:new Date().toISOString(), name:x.prospect, postcode:x.area+(x.postcode?' · '+x.postcode:''), phone:'', email:'', source:'Daily territory map', status:'New lead', priority:x.priority==='A'?'High':x.priority==='B'?'Medium':'Low', nextAction:x.action, nextDate:new Date(Date.now()+86400000).toISOString().slice(0,10), notes:x.reasoning||'', whyNow:x.whyNow, pain:x.pain, offer:x.offer, angle:x.angle, energySignal:x.energySignal||'', ownershipSignal:x.ownershipSignal||'', url:x.url, score:x.score, history:'' };
+      const listing=/rightmove|onthemarket|primelocation|zoopla/i.test(x.url||''),planning=/planning|gov\.uk/i.test(x.url||'');
+      existing = { id:'map-'+x.id, sourceId:x.id, created:new Date().toISOString(), name:x.prospect, postcode:x.area+(x.postcode?' · '+x.postcode:''), area:x.area, latitude:x.latitude, longitude:x.longitude, driveMinutes:x.driveMinutes, phone:'', email:'', contactName:'', contactRoute:listing?'Estate agent':planning?'Architect / planning agent':'', contactConfidence:listing||planning?'Possible':'Unverified', source:'Daily territory map', status:'New lead', priority:x.priority==='A'?'High':x.priority==='B'?'Medium':'Low', nextAction:x.action, nextDate:new Date(Date.now()+86400000).toISOString().slice(0,10), notes:x.reasoning||'', whyNow:x.whyNow, pain:x.pain, offer:x.offer, angle:x.angle, energySignal:x.energySignal||'', ownershipSignal:x.ownershipSignal||'', url:x.url, score:x.score, history:'' };
       leads.unshift(existing); localStorage.setItem('acePoolLeads', JSON.stringify(leads));
     }
     location.href = 'dashboard.html?lead=' + encodeURIComponent(existing.id);
@@ -34,3 +35,4 @@
   }
   init();
 })();
+import('./cloud-sync.js');

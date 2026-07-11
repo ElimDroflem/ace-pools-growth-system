@@ -23,7 +23,7 @@ Start with `index.html`, then open `templates/start-here.html`.
 1. Confirm the final package prices, service radius and commercial terms.
 2. Deploy the folder to a secure web host.
 3. Connect the Pool Check form to the chosen CRM or form backend.
-4. Replace the door-drop QR placeholder with a QR code pointing to the live Pool Check URL.
+4. Print-test the supplied door-drop QR code once GitHub Pages is enabled.
 5. Replace the sample dashboard leads with verified records.
 6. Check privacy information, permissions, objections and the lawful contact route.
 7. Test one complete journey on a phone: QR scan, check, result, Alex notification, booking, review, quote and onboarding.
@@ -34,4 +34,4 @@ The current dashboard stores data in the browser and supports CSV backups. A hos
 
 ## Recommended live URL
 
-`https://acepools.co.uk/pool-check`
+`https://elimdroflem.github.io/ace-pools-growth-system/pool-check.html`

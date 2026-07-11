@@ -1,4 +1,4 @@
-const url=localStorage.getItem('aceSyncUrl'),key=localStorage.getItem('aceSyncKey'),watched=new Set(['acePoolLeads','acePoolReviews','aceSettings']);
+const url=localStorage.getItem('aceSyncUrl'),key=localStorage.getItem('aceSyncKey'),watched=new Set(['acePoolLeads','acePoolReviews','aceCustomers','aceServiceReports','aceSettings']);
 if(url&&key&&localStorage.getItem('aceSyncEnabled')==='1')startCloudSync();
 async function startCloudSync(){
   try{

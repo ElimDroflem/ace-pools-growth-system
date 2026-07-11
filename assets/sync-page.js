@@ -1,5 +1,5 @@
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
-const $=id=>document.getElementById(id),keys=['acePoolLeads','acePoolReviews','aceSettings'];
+const $=id=>document.getElementById(id),keys=['acePoolLeads','acePoolReviews','aceCustomers','aceServiceReports','aceSettings'];
 const config=await fetch('data/public-config.json').then(response=>response.json());
 localStorage.setItem('aceSyncUrl',config.supabaseUrl);localStorage.setItem('aceSyncKey',config.supabaseAnonKey);
 $('syncEmail').value=localStorage.getItem('aceSyncEmail')||'';

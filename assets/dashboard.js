@@ -8,6 +8,7 @@
   const open=lead=>!['Won','Lost','Onboarded'].includes(lead.status);
   const urgency=(a,b)=>((a.nextDate||'9999').localeCompare(b.nextDate||'9999'))||((rank[a.priority]??2)-(rank[b.priority]??2))||((b.score||0)-(a.score||0));
   const normalStage=value=>value==='Onboarded'?'Won':['Qualified','Review offered','Follow-up due'].includes(value)?'Contacted':stages.includes(value)?value:'New lead';
+  function createCustomer(lead){const customers=JSON.parse(localStorage.getItem('aceCustomers')||'[]');let customer=customers.find(item=>String(item.leadId)===String(lead.id));if(!customer){customer={id:`customer-${Date.now()}`,leadId:lead.id,created:new Date().toISOString(),name:lead.contactName||lead.name,property:lead.postcode||lead.name,phone:lead.phone||'',email:lead.email||'',plan:lead.proposedPlan||'PoolCare Complete',annualPrice:lead.lastQuoteValue||'',onboardingComplete:false,nextVisit:'',renewalDate:new Date(Date.now()+365*86400000).toISOString().slice(0,10),notes:lead.notes||'',upgradeOpportunity:''};customers.unshift(customer);localStorage.setItem('aceCustomers',JSON.stringify(customers));}lead.customerId=customer.id;lead.nextAction='Complete customer onboarding';return customer;}
 
   function script(lead){return lead.angle||`Hello, I’m Alex from Ace Pools in Comberton. We help local owners keep their pool safe, reliable and economical. I’d be happy to provide a complimentary Pool Review so you know what is working, what needs attention and what could save money. Would that be useful?`;}
   function render(){
@@ -31,7 +32,18 @@
   $('copyScript').onclick=async()=>{await navigator.clipboard.writeText($('dealScript').textContent);$('copyScript').textContent='Copied';setTimeout(()=>$('copyScript').textContent='Copy',1000);};
   $('addLead').onclick=()=>$('leadDialog').showModal();
   $('leadForm').onsubmit=event=>{if(event.submitter?.value==='cancel')return;leads.unshift({id:Date.now(),created:new Date().toISOString(),name:$('leadName').value.trim(),postcode:$('leadPostcode').value.trim(),phone:$('leadPhone').value.trim(),email:$('leadEmail').value.trim(),source:'Manual lead',status:'New lead',priority:'Medium',nextAction:'Make first contact and offer Pool Review',nextDate:tomorrow(),notes:$('leadNotes').value.trim(),history:''});save();setTimeout(render,0);$('leadForm').reset();};
-  $('dealForm').onsubmit=event=>{if(event.submitter?.value==='cancel')return;const lead=active();if(!lead)return;lead.contactName=$('dealContactName').value.trim();lead.contactRoute=$('dealContactRoute').value.trim();lead.phone=$('dealPhone').value.trim();lead.email=$('dealEmail').value.trim();lead.status=$('dealStatus').value;lead.nextAction=$('dealNextAction').value.trim();lead.nextDate=$('dealNextDate').value;const outcome=$('dealOutcome').value,note=$('dealInteraction').value.trim();if(outcome==='Interested – book review'){lead.status='Contacted';lead.nextAction='Confirm the Pool Review date';}else if(outcome==='Not suitable'||outcome==='Already has provider'){lead.status='Lost';lead.nextAction='No further action';}else if(outcome==='No answer'){lead.status='Contacted';lead.nextAction='Try again, then send the Pool Review letter';}if(outcome||note)lead.history=`[${new Date().toLocaleString('en-GB')}] ${outcome}${outcome&&note?' – ':''}${note}\n${lead.history||''}`;save();setTimeout(render,0);};
+  $('dealForm').onsubmit=event=>{
+    if(event.submitter?.value==='cancel')return;
+    const lead=active();if(!lead)return;
+    lead.contactName=$('dealContactName').value.trim();lead.contactRoute=$('dealContactRoute').value.trim();lead.phone=$('dealPhone').value.trim();lead.email=$('dealEmail').value.trim();lead.status=$('dealStatus').value;lead.nextAction=$('dealNextAction').value.trim();lead.nextDate=$('dealNextDate').value;
+    const outcome=$('dealOutcome').value,note=$('dealInteraction').value.trim();
+    if(outcome==='Interested – book review'){lead.status='Contacted';lead.nextAction='Confirm the Pool Review date';}
+    else if(outcome==='Not suitable'||outcome==='Already has provider'){lead.status='Lost';lead.nextAction='No further action';}
+    else if(outcome==='No answer'){lead.status='Contacted';lead.nextAction='Try again, then send the Pool Review letter';}
+    if(outcome||note)lead.history=`[${new Date().toLocaleString('en-GB')}] ${outcome}${outcome&&note?' – ':''}${note}\n${lead.history||''}`;
+    if(lead.status==='Won')createCustomer(lead);
+    save();setTimeout(render,0);
+  };
   $('removeDeal').onclick=()=>{if(confirm('Remove this opportunity?')){leads=leads.filter(item=>String(item.id)!==String(activeId));save();$('dealDialog').close();render();}};
   $('exportCsv').onclick=()=>{const keys=['name','postcode','contactName','contactRoute','phone','email','source','status','priority','nextAction','nextDate','whyNow','pain','offer','angle','url','history'],csv=[keys.join(','),...leads.map(lead=>keys.map(key=>`"${String(lead[key]||'').replace(/"/g,'""')}"`).join(','))].join('\n'),link=document.createElement('a');link.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));link.download='ace-pools-pipeline.csv';link.click();URL.revokeObjectURL(link.href);};
   function parse(line){const out=[];let value='',quoted=false;for(let i=0;i<line.length;i++){const char=line[i];if(char==='"'&&line[i+1]==='"'){value+='"';i++;}else if(char==='"')quoted=!quoted;else if(char===','&&!quoted){out.push(value);value='';}else value+=char;}out.push(value);return out;}

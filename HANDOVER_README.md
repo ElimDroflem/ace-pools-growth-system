@@ -1,44 +1,24 @@
-# Ace Pools sales operating system
+# Ace Pools platform
 
-Live home: `https://elimdroflem.github.io/ace-pools-growth-system/`
+Live platform: `https://elimdroflem.github.io/ace-pools-growth-system/`
 
-## Alex's daily process
+## The whole workflow
 
-1. Open **Today** and complete overdue follow-ups.
-2. Open **Pool Property Register** and leave the default **Act now** filter on.
-3. Open the evidence for the top property and use its stated contact route and opening line.
-4. Select **Work this property**, then call, write or visit as instructed.
-5. Aim to book the complimentary Pool Review and always set a dated next action.
-6. Use **Field Mode** to work the surrounding cluster while already in the area.
-7. Complete **Pool Review** on site, create the proposal and keep following up until won or lost.
+1. **Find leads:** choose a confirmed local pool property and add it to Pipeline.
+2. **Pipeline:** open the opportunity shown at the top, make contact and save the next step.
+3. **Pool Review:** complete the on-site review. The customer proposal is created automatically.
+4. Mark the proposal sent. The follow-up returns to the top of Pipeline automatically.
 
-## What the map contains
+There are no other workflows to learn. Old links for Today, Field Mode, Historic Customers, Workflow and Lead Engine redirect into these three screens.
 
-- **Confirmed pool property:** a public source explicitly shows or describes a pool.
-- **Act now (A):** confirmed pool, within the territory, an available contact route and a strong current trigger.
-- **Build route (B):** confirmed local pool, but the contact route or urgency needs more work.
-- **Verify (C):** a new automated signal. It is not treated as a lead until the exact property, pool and route are confirmed.
+## Occasional tools
 
-Known properties remain in the register after a sale listing disappears. The daily scan adds new signals and refreshes distance, scoring and the action queue. Planning feeds are supplementary because national coverage is incomplete.
+Open **Import customers or manage data** at the bottom of Pipeline to:
 
-## Warm leads
+- import previous Ace Pools customers;
+- add a manual lead;
+- check QR enquiries;
+- download a backup; or
+- connect optional cloud backup.
 
-Use **Historic Customers** to import Ace Pools' previous projects. The required CSV template is included in `templates/historic-customer-import.csv`.
-
-## Cloud mode
-
-The live site is connected to the Ace Pools Supabase project. Open **Cloud**, enter Alex's email, use the secure login link and select **Upload this device**. Other devices can then use **Restore latest data**.
-
-Cloud mode synchronises leads and reviews across Alex's devices and receives public QR Pool Check enquiries. The published key is intentionally browser-safe; row-level security protects private sales data.
-
-## Core tools
-
-- `today.html` — daily priorities and overdue actions
-- `lead-map.html` — ranked leads and hotspots
-- `reactivate.html` — previous-customer importer
-- `canvass.html` — mobile door-knocking workflow
-- `dashboard.html` — intelligence, scripts and pipeline
-- `review.html` — on-site Pool Review
-- `proposal.html` — customer proposal
-- `inquiries.html` — new QR responses
-- `sync.html` — secure multi-device connection
+The platform works without signing in. Known pool properties remain in the register even after a sale listing disappears, and the lead scan refreshes daily.

@@ -1,97 +1,40 @@
 (() => {
-  const stages = ['New lead','Contacted','Qualified','Review offered','Review booked','Review completed','Quote sent','Follow-up due','Won','Lost','Onboarded'];
-  const $ = id => document.getElementById(id);
-  const rank = { High: 0, Medium: 1, Low: 2 };
-  const tomorrow = () => new Date(Date.now() + 86400000).toISOString().slice(0, 10);
-  let leads = JSON.parse(localStorage.getItem('acePoolLeads') || '[]');
-  let activeId = null;
+  const stages=['New lead','Contacted','Review booked','Review completed','Quote sent','Won','Lost'];
+  const $=id=>document.getElementById(id),esc=s=>String(s??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+  const rank={High:0,Medium:1,Low:2},today=()=>new Date().toISOString().slice(0,10),tomorrow=()=>new Date(Date.now()+86400000).toISOString().slice(0,10);
+  let leads=JSON.parse(localStorage.getItem('acePoolLeads')||'[]'),activeId=null;
+  const save=()=>localStorage.setItem('acePoolLeads',JSON.stringify(leads));
+  const active=()=>leads.find(lead=>String(lead.id)===String(activeId));
+  const open=lead=>!['Won','Lost','Onboarded'].includes(lead.status);
+  const urgency=(a,b)=>((a.nextDate||'9999').localeCompare(b.nextDate||'9999'))||((rank[a.priority]??2)-(rank[b.priority]??2))||((b.score||0)-(a.score||0));
+  const normalStage=value=>value==='Onboarded'?'Won':['Qualified','Review offered','Follow-up due'].includes(value)?'Contacted':stages.includes(value)?value:'New lead';
 
-  if (!leads.length) {
-    leads = [{ id: 1, name: 'Example prospect', postcode: 'CB23', phone: '', email: '', source: 'Example', status: 'New lead', priority: 'High', nextAction: 'Open the Lead Map and work the highest-scoring lead', nextDate: tomorrow(), notes: 'Example only', whyNow: 'Example only', pain: 'Example only', offer: 'Complimentary Pool Review', angle: 'Example only', history: '' }];
-    save();
+  function script(lead){return lead.angle||`Hello, I’m Alex from Ace Pools in Comberton. We help local owners keep their pool safe, reliable and economical. I’d be happy to provide a complimentary Pool Review so you know what is working, what needs attention and what could save money. Would that be useful?`;}
+  function render(){
+    leads.forEach(lead=>lead.status=normalStage(lead.status));
+    const q=$('search').value.toLowerCase(),stage=$('statusFilter').value;
+    const activeLeads=leads.filter(open).sort(urgency),rows=activeLeads.filter(lead=>(!q||`${lead.name} ${lead.postcode}`.toLowerCase().includes(q))&&(!stage||lead.status===stage));
+    const next=activeLeads[0];
+    $('nextLead').innerHTML=next?`<article class="next-lead"><div><div class="eyebrow">WORK THIS NEXT · ${esc(next.status)}</div><h2>${esc(next.name)}</h2><p>${esc(next.nextAction||'Make contact and offer the Pool Review')}</p><small>${next.nextDate&&next.nextDate<today()?'Overdue: ':''}${esc(next.nextDate||'Set a date')}</small></div><button class="btn btn-primary" data-work="${esc(next.id)}">Open next conversation</button></article>`:`<article class="next-lead empty-next"><div><div class="eyebrow">PIPELINE CLEAR</div><h2>Find the next pool owner.</h2><p>Open the confirmed-property register and add the strongest opportunity.</p></div><a class="btn btn-primary" href="lead-map.html">Find a lead</a></article>`;
+    $('leadRows').innerHTML=rows.map(lead=>`<article class="pipeline-row"><div><span class="stage-pill">${esc(lead.status)}</span><h3>${esc(lead.name)}</h3><small>${esc(lead.postcode||'')}</small></div><p>${esc(lead.whyNow||lead.notes||lead.source||'')}</p><div><b>${esc(lead.nextAction||'Make contact')}</b><small>${esc(lead.nextDate||'No date')}</small></div><button class="btn btn-dark" data-work="${esc(lead.id)}">Open</button></article>`).join('')||'<div class="card"><p>No matching opportunities.</p></div>';
+    $('kpiOverdue').textContent=activeLeads.filter(lead=>lead.nextDate&&lead.nextDate<today()).length;
+    $('kpiReviews').textContent=activeLeads.filter(lead=>lead.status==='Review booked').length;
+    $('kpiQuotes').textContent=activeLeads.filter(lead=>lead.status==='Quote sent').length;
+    document.querySelectorAll('[data-work]').forEach(button=>button.onclick=()=>openDeal(button.dataset.work)); save();
   }
 
-  function save() { localStorage.setItem('acePoolLeads', JSON.stringify(leads)); }
-  function escape(s = '') { return String(s).replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
-  function lead() { return leads.find(x => String(x.id) === String(activeId)); }
+  function updateLinks(){const phone=$('dealPhone').value.replace(/[^+\d]/g,''),email=$('dealEmail').value.trim();$('callLead').href=phone?`tel:${phone}`:'#';$('callLead').classList.toggle('disabled',!phone);$('emailLead').href=email?`mailto:${email}?subject=${encodeURIComponent('Complimentary Ace Pools Pool Review')}`:'#';$('emailLead').classList.toggle('disabled',!email);}
+  function openDeal(id){const lead=leads.find(item=>String(item.id)===String(id));if(!lead)return;activeId=lead.id;$('dealTitle').textContent=lead.name;$('dealMeta').textContent=[lead.postcode,lead.poolType?`${lead.poolType} pool`:'',lead.score?`Priority score ${lead.score}`:''].filter(Boolean).join(' · ');$('dealWhy').textContent=lead.whyNow||'A direct conversation will confirm whether help is needed.';$('dealPain').textContent=lead.pain||lead.notes||'Safety, equipment condition and running costs.';$('dealOffer').textContent=lead.offer||'Book the complimentary Pool Review.';$('dealScript').textContent=script(lead);$('dealEvidence').href=lead.url||'#';$('dealEvidence').hidden=!lead.url;$('dealContactName').value=lead.contactName||'';$('dealContactRoute').value=lead.contactRoute||'';$('dealPhone').value=lead.phone||'';$('dealEmail').value=lead.email||'';$('dealStatus').value=normalStage(lead.status);$('dealNextAction').value=lead.nextAction||'Make contact and offer the Pool Review';$('dealNextDate').value=lead.nextDate||tomorrow();$('dealOutcome').value='';$('dealInteraction').value='';$('dealHistory').value=lead.history||'';$('startReview').href=`review.html?lead=${encodeURIComponent(lead.id)}`;updateLinks();$('dealDialog').showModal();}
 
-  function scripts(l) {
-    const trigger = l.whyNow || 'a public signal connected with the property';
-    const need = l.pain || 'pool safety, condition and running costs';
-    const offer = l.offer || 'complimentary Pool Review';
-    return {
-      opening: l.angle || `Hello, I’m Alex from Ace Pools in Comberton. I’m speaking with pool owners locally because small servicing and equipment issues can become expensive or affect whether a pool is safe for family and guests. I’d like to offer a ${offer}—would that be useful?`,
-      letter: `Hello, I’m Alex Craig from Ace Pools in Comberton. ${trigger} suggests this may be a useful time to review ${need}. We help pool owners keep their pool safe for family and guests, avoid preventable failures and reduce long-term running costs. I’d be happy to provide a ${offer}. There is no obligation; it simply gives you a clear picture of what is working, what needs attention and what could save money.`,
-      followup: `Hello, it’s Alex from Ace Pools. I’m following up about the ${offer}. The purpose is to give you a practical view of safety, equipment condition and avoidable running costs before small issues become expensive. Would a short visit next week suit you?`
-    };
-  }
-
-  function render() {
-    const q = $('search').value.toLowerCase(), sf = $('statusFilter').value, pf = $('priorityFilter').value;
-    const rows = leads.filter(l => (!q || `${l.name} ${l.postcode}`.toLowerCase().includes(q)) && (!sf || l.status === sf) && (!pf || l.priority === pf)).sort((a,b) => (rank[a.priority] - rank[b.priority]) || String(a.nextDate).localeCompare(String(b.nextDate)));
-    $('leadRows').innerHTML = rows.map(l => `<tr><td class="priority ${l.priority.toLowerCase()}">${escape(l.priority)}</td><td><strong>${escape(l.name)}</strong><br><small>${escape(l.postcode || '')}</small></td><td>${escape(l.whyNow || l.notes || l.source)}</td><td>${escape(l.status)}</td><td>${escape(l.nextAction || '')}</td><td>${escape(l.nextDate || '')}</td><td><button class="btn btn-dark" data-work="${l.id}">Work deal</button></td></tr>`).join('') || '<tr><td colspan="7">No matching leads.</td></tr>';
-    $('kpiNew').textContent = leads.filter(l => l.status === 'New lead').length;
-    $('kpiReviews').textContent = leads.filter(l => l.status === 'Review booked').length;
-    $('kpiQuotes').textContent = leads.filter(l => l.status === 'Quote sent').length;
-    $('kpiWon').textContent = leads.filter(l => ['Won','Onboarded'].includes(l.status)).length;
-    document.querySelectorAll('[data-work]').forEach(x => x.onclick = () => openDeal(x.dataset.work));
-  }
-
-  function showScript() {
-    const l = lead(); if (!l) return;
-    const type = $('scriptType').value;
-    const labels = { opening: 'PHONE / DOORSTEP OPENING', letter: 'LETTER / EMAIL', followup: 'FOLLOW-UP MESSAGE' };
-    $('scriptLabel').textContent = labels[type];
-    $('dealScript').textContent = scripts(l)[type];
-  }
-
-  function openDeal(id) {
-    const l = leads.find(x => String(x.id) === String(id)); if (!l) return;
-    activeId = l.id;
-    $('dealTitle').textContent = l.name;
-    $('dealMeta').textContent = [l.postcode, l.source, l.score ? `Score ${l.score}` : ''].filter(Boolean).join(' · ');
-    $('dealWhy').textContent = l.whyNow || 'Verify the trigger before contact.';
-    $('dealPain').textContent = l.pain || l.notes || 'Qualify the pool condition and current service arrangement.';
-    $('dealOffer').textContent = l.offer || 'Complimentary Pool Review';
-    $('dealEnergy').textContent = l.energySignal || 'None found';
-    $('dealOwnership').textContent = l.ownershipSignal || 'None found';
-    $('dealEvidence').href = l.url || '#';
-    $('dealEvidence').style.display = l.url ? 'inline-flex' : 'none';
-    $('dealStatus').value = l.status || 'New lead'; $('dealPriority').value = l.priority || 'Medium';
-    $('dealContactName').value = l.contactName || ''; $('dealContactRoute').value = l.contactRoute || ''; $('dealContactConfidence').value = l.contactConfidence || 'Unverified';
-    $('dealPhone').value = l.phone || ''; $('dealEmail').value = l.email || '';
-    $('dealNextAction').value = l.nextAction || 'Make first contact and offer Pool Review'; $('dealNextDate').value = l.nextDate || tomorrow();
-    $('dealOutcome').value = ''; $('dealInteraction').value = ''; $('dealHistory').value = l.history || '';
-    $('scriptType').value = l.status === 'New lead' ? 'opening' : 'followup'; showScript();
-    $('startReview').href = `review.html?lead=${encodeURIComponent(l.id)}`;
-    $('researchLead').href = `https://www.google.com/search?q=${encodeURIComponent(`${l.name} ${l.postcode||''} owner estate agent architect contact`)}`;
-    updateContactLinks(); $('dealDialog').showModal();
-  }
-
-  function updateContactLinks() {
-    const phone = $('dealPhone').value.replace(/[^+\d]/g, '');
-    const email = $('dealEmail').value.trim();
-    $('callLead').href = phone ? `tel:${phone}` : '#'; $('callLead').style.opacity = phone ? '1' : '.45';
-    $('emailLead').href = email ? `mailto:${email}?subject=${encodeURIComponent('Complimentary Ace Pools Pool Review')}` : '#'; $('emailLead').style.opacity = email ? '1' : '.45';
-  }
-
-  stages.forEach(s => { $('statusFilter').insertAdjacentHTML('beforeend', `<option>${s}</option>`); $('dealStatus').insertAdjacentHTML('beforeend', `<option>${s}</option>`); });
-  ['search','statusFilter','priorityFilter'].forEach(id => $(id).oninput = render);
-  $('scriptType').onchange = showScript; $('dealPhone').oninput = updateContactLinks; $('dealEmail').oninput = updateContactLinks;
-  $('copyScript').onclick = async () => { await navigator.clipboard.writeText($('dealScript').textContent); $('copyScript').textContent = 'Copied'; setTimeout(() => $('copyScript').textContent = 'Copy message', 1200); };
-  $('addLead').onclick = () => $('leadDialog').showModal();
-  $('leadForm').onsubmit = e => { if (e.submitter?.value === 'cancel') return; leads.unshift({ id: Date.now(), created: new Date().toISOString(), name: $('leadName').value.trim(), postcode: $('leadPostcode').value.trim(), phone: $('leadPhone').value.trim(), email: $('leadEmail').value.trim(), source: $('leadSource').value, status: 'New lead', priority: $('leadPriority').value, nextAction: 'Make first contact and offer Pool Review', nextDate: tomorrow(), notes: $('leadNotes').value.trim(), history: '' }); save(); setTimeout(render, 0); $('leadForm').reset(); };
-  $('dealForm').onsubmit = e => {
-    if (e.submitter?.value === 'cancel') return;
-    const l = lead(); if (!l) return;
-    l.status = $('dealStatus').value; l.priority = $('dealPriority').value; l.contactName = $('dealContactName').value.trim(); l.contactRoute = $('dealContactRoute').value; l.contactConfidence = $('dealContactConfidence').value; l.phone = $('dealPhone').value.trim(); l.email = $('dealEmail').value.trim(); l.nextAction = $('dealNextAction').value.trim(); l.nextDate = $('dealNextDate').value;
-    const note = $('dealInteraction').value.trim(), outcome = $('dealOutcome').value;
-    if (note || outcome) { const stamp = new Date().toLocaleString('en-GB'); l.history = `[${stamp}] ${outcome}${outcome && note ? ' – ' : ''}${note}\n${l.history || ''}`; }
-    save(); setTimeout(render, 0);
-  };
-  $('removeDeal').onclick = () => { if (confirm('Remove this deal from the pipeline?')) { leads = leads.filter(x => String(x.id) !== String(activeId)); save(); $('dealDialog').close(); render(); } };
-  $('exportCsv').onclick = () => { const keys = ['name','postcode','contactName','contactRoute','contactConfidence','phone','email','source','status','priority','nextAction','nextDate','whyNow','pain','offer','angle','energySignal','ownershipSignal','url','history']; const csv = [keys.join(','), ...leads.map(l => keys.map(k => `"${String(l[k] || '').replace(/"/g, '""')}"`).join(','))].join('\n'); const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], {type:'text/csv'})); a.download = 'ace-pools-deals.csv'; a.click(); URL.revokeObjectURL(a.href); };
-  $('importCsv').onchange = e => { const f = e.target.files[0]; if (!f) return; const reader = new FileReader(); reader.onload = () => { const lines = reader.result.split(/\r?\n/).filter(Boolean), headers = parse(lines.shift()); for (const line of lines) { const vals = parse(line), obj = { id: Date.now() + Math.random(), status:'New lead', priority:'Medium', nextAction:'Review imported record', nextDate:tomorrow() }; headers.forEach((h,i) => obj[h.trim()] = vals[i] || ''); leads.push(obj); } save(); render(); }; reader.readAsText(f); };
-  function parse(line) { const out=[]; let v='', q=false; for(let i=0;i<line.length;i++){const c=line[i]; if(c==='"'&&line[i+1]==='"'){v+='"';i++;}else if(c==='"')q=!q;else if(c===','&&!q){out.push(v);v='';}else v+=c;} out.push(v); return out; }
-  render(); const requested = new URLSearchParams(location.search).get('lead'); if (requested) setTimeout(() => openDeal(requested), 0);
+  stages.forEach(stage=>{$('statusFilter').insertAdjacentHTML('beforeend',`<option>${stage}</option>`);$('dealStatus').insertAdjacentHTML('beforeend',`<option>${stage}</option>`);});
+  ['search','statusFilter'].forEach(id=>$(id).oninput=render);$('dealPhone').oninput=$('dealEmail').oninput=updateLinks;
+  $('copyScript').onclick=async()=>{await navigator.clipboard.writeText($('dealScript').textContent);$('copyScript').textContent='Copied';setTimeout(()=>$('copyScript').textContent='Copy',1000);};
+  $('addLead').onclick=()=>$('leadDialog').showModal();
+  $('leadForm').onsubmit=event=>{if(event.submitter?.value==='cancel')return;leads.unshift({id:Date.now(),created:new Date().toISOString(),name:$('leadName').value.trim(),postcode:$('leadPostcode').value.trim(),phone:$('leadPhone').value.trim(),email:$('leadEmail').value.trim(),source:'Manual lead',status:'New lead',priority:'Medium',nextAction:'Make first contact and offer Pool Review',nextDate:tomorrow(),notes:$('leadNotes').value.trim(),history:''});save();setTimeout(render,0);$('leadForm').reset();};
+  $('dealForm').onsubmit=event=>{if(event.submitter?.value==='cancel')return;const lead=active();if(!lead)return;lead.contactName=$('dealContactName').value.trim();lead.contactRoute=$('dealContactRoute').value.trim();lead.phone=$('dealPhone').value.trim();lead.email=$('dealEmail').value.trim();lead.status=$('dealStatus').value;lead.nextAction=$('dealNextAction').value.trim();lead.nextDate=$('dealNextDate').value;const outcome=$('dealOutcome').value,note=$('dealInteraction').value.trim();if(outcome==='Interested – book review'){lead.status='Contacted';lead.nextAction='Confirm the Pool Review date';}else if(outcome==='Not suitable'||outcome==='Already has provider'){lead.status='Lost';lead.nextAction='No further action';}else if(outcome==='No answer'){lead.status='Contacted';lead.nextAction='Try again, then send the Pool Review letter';}if(outcome||note)lead.history=`[${new Date().toLocaleString('en-GB')}] ${outcome}${outcome&&note?' – ':''}${note}\n${lead.history||''}`;save();setTimeout(render,0);};
+  $('removeDeal').onclick=()=>{if(confirm('Remove this opportunity?')){leads=leads.filter(item=>String(item.id)!==String(activeId));save();$('dealDialog').close();render();}};
+  $('exportCsv').onclick=()=>{const keys=['name','postcode','contactName','contactRoute','phone','email','source','status','priority','nextAction','nextDate','whyNow','pain','offer','angle','url','history'],csv=[keys.join(','),...leads.map(lead=>keys.map(key=>`"${String(lead[key]||'').replace(/"/g,'""')}"`).join(','))].join('\n'),link=document.createElement('a');link.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));link.download='ace-pools-pipeline.csv';link.click();URL.revokeObjectURL(link.href);};
+  function parse(line){const out=[];let value='',quoted=false;for(let i=0;i<line.length;i++){const char=line[i];if(char==='"'&&line[i+1]==='"'){value+='"';i++;}else if(char==='"')quoted=!quoted;else if(char===','&&!quoted){out.push(value);value='';}else value+=char;}out.push(value);return out;}
+  $('importHistoric').onclick=()=>{const file=$('historicFile').files[0];if(!file){$('importResult').textContent='Choose the customer CSV first.';return;}const reader=new FileReader();reader.onload=()=>{const lines=reader.result.split(/\r?\n/).filter(Boolean),headers=parse(lines.shift()).map(value=>value.trim().toLowerCase());let added=0;for(const line of lines){const values=parse(line),row={};headers.forEach((header,index)=>row[header]=values[index]?.trim()||'');if(!row.name&&!row.postcode)continue;const year=+(row.project_year||2015),age=Math.max(0,new Date().getFullYear()-year),text=`${row.project_type} ${row.notes}`.toLowerCase(),score=Math.min(95,45+Math.min(25,age)+(/pump|heater|heating|filter|liner|cover|renovat/.test(text)?15:0)+(!row.last_contact?10:0)),id=`historic-${(row.email||row.phone||row.name+'-'+row.postcode).toLowerCase().replace(/\W/g,'')}`;if(leads.some(lead=>lead.id===id))continue;leads.unshift({id,created:new Date().toISOString(),name:row.name||`Previous customer · ${row.postcode}`,postcode:row.postcode,phone:row.phone,email:row.email,source:'Previous Ace Pools customer',status:'New lead',priority:score>=70?'High':'Medium',score,nextAction:'Call personally and offer an updated Pool Review',nextDate:tomorrow(),whyNow:`Ace Pools completed ${row.project_type||'previous work'}${year?` in ${year}`:''}. The installation is approximately ${age} years old.`,pain:'Ageing equipment, safety and changing running costs.',offer:'Complimentary returning-customer Pool Review',angle:`Hello, it’s Alex from Ace Pools. We previously worked on your pool${year?` around ${year}`:''}. I’m contacting previous customers to make sure their equipment, safety arrangements and running costs are still where they should be. I’d be happy to carry out a complimentary updated review.`,notes:row.notes||'',history:''});added++;}save();render();$('importResult').textContent=`${added} previous customers added to the pipeline.`;};reader.readAsText(file);};
+  render();const requested=new URLSearchParams(location.search).get('lead');if(requested)setTimeout(()=>openDeal(requested),0);
 })();

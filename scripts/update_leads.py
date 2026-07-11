@@ -141,6 +141,12 @@ def main():
     leads = []
     for lead in unique.values():
         item = dict(lead)
+        evidence_text = " ".join(str(item.get(k, "")) for k in ("signal", "pain", "whyNow"))
+        epc = re.search(r"\bEPC\s*(?:rating\s*)?([A-G])\b", evidence_text, re.I)
+        fuels = [x for x in ("gas", "oil", "electric", "air-source heat pump", "solar") if x in evidence_text.lower()]
+        ownership = next((x for x in ("sold stc", "under offer", "sale agreed", "chain-free", "no-chain", "no onward chain") if x in evidence_text.lower()), "")
+        item["energySignal"] = (f"EPC {epc.group(1).upper()}" if epc else "") + ((" · " if epc and fuels else "") + ", ".join(fuels) if fuels else "")
+        item["ownershipSignal"] = ownership.title()
         coords = geocode(item.get("postcode", ""), cache)
         if coords:
             mins, method = drive_minutes(origin, coords)
@@ -150,7 +156,8 @@ def main():
         else:
             item.update(latitude=None, longitude=None, driveMinutes=None, driveMethod="unverified", inTerritory=False)
             route_bonus = -8
-        item["score"] = max(0, min(100, int(item.get("baseScore", 50)) + route_bonus))
+        energy_bonus = 4 if (epc and epc.group(1).upper() in "DEFG") or any(x in fuels for x in ("gas", "oil", "electric")) else 0
+        item["score"] = max(0, min(100, int(item.get("baseScore", 50)) + route_bonus + energy_bonus))
         item["priority"] = "A" if item["score"] >= 90 else "B" if item["score"] >= 75 else "C"
         item["reasoning"] = f"{item.get('whyNow','')} Likely need: {item.get('pain','')}"
         if item["inTerritory"] or item.get("autoDiscovered"):

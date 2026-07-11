@@ -69,7 +69,16 @@
       L.circleMarker([payload.centre.latitude,payload.centre.longitude],{radius:9,color:'#082536',weight:4,fillColor:'#c7f36b',fillOpacity:1}).addTo(map).bindPopup('<strong>Comberton</strong><br>Ace Pools territory centre');
       markers=L.markerClusterGroup({showCoverageOnHover:false,maxClusterRadius:42}); map.addLayer(markers);
       ['mapPriority','mapDrive'].forEach(id=>$(id).onchange=render); $('mapSearch').oninput=render; render();
+      if(location.hostname.endsWith('vercel.app'))refreshDailyData();
     } catch(error) { $('mapStatus').textContent='Lead data could not be loaded. Run the daily refresh workflow.'; }
+  }
+  async function refreshDailyData(){
+    try{
+      const response=await fetch('https://raw.githubusercontent.com/ElimDroflem/ace-pools-growth-system/main/data/leads.json',{cache:'no-store'});
+      if(!response.ok)return;
+      const latest=await response.json();
+      if(new Date(latest.generatedAt)>new Date(payload.generatedAt)){payload=latest;render();}
+    }catch{}
   }
   init();
 })();

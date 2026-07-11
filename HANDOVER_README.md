@@ -5,12 +5,21 @@ Live home: `https://elimdroflem.github.io/ace-pools-growth-system/`
 ## Alex's daily process
 
 1. Open **Today** and complete overdue follow-ups.
-2. Open **Lead Map** and add the strongest new leads.
-3. Use **Field Mode** when working a local hotspot.
-4. Open the lead's sales brief and aim to book the complimentary Pool Review.
-5. Complete **Pool Review** on site.
-6. Create the proposal, save it as PDF and mark it sent.
-7. Keep a dated next action until the opportunity is won or lost.
+2. Open **Pool Property Register** and leave the default **Act now** filter on.
+3. Open the evidence for the top property and use its stated contact route and opening line.
+4. Select **Work this property**, then call, write or visit as instructed.
+5. Aim to book the complimentary Pool Review and always set a dated next action.
+6. Use **Field Mode** to work the surrounding cluster while already in the area.
+7. Complete **Pool Review** on site, create the proposal and keep following up until won or lost.
+
+## What the map contains
+
+- **Confirmed pool property:** a public source explicitly shows or describes a pool.
+- **Act now (A):** confirmed pool, within the territory, an available contact route and a strong current trigger.
+- **Build route (B):** confirmed local pool, but the contact route or urgency needs more work.
+- **Verify (C):** a new automated signal. It is not treated as a lead until the exact property, pool and route are confirmed.
+
+Known properties remain in the register after a sale listing disappears. The daily scan adds new signals and refreshes distance, scoring and the action queue. Planning feeds are supplementary because national coverage is incomplete.
 
 ## Warm leads
 

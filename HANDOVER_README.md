@@ -18,14 +18,9 @@ Use **Historic Customers** to import Ace Pools' previous projects. The required 
 
 ## Cloud mode
 
-Local mode works immediately. Cloud mode requires a free Supabase project:
+The live site is connected to the Ace Pools Supabase project. Open **Cloud**, enter Alex's email, use the secure login link and select **Upload this device**. Other devices can then use **Restore latest data**.
 
-1. Run `supabase-schema.sql` in the Supabase SQL editor.
-2. Put the project URL and public anon key into `data/public-config.json` before publishing.
-3. Open **Cloud** in the platform, enter the same URL/key and Alex's email.
-4. Use the secure email link to sign in, then upload this device.
-
-Cloud mode synchronises leads and reviews across Alex's devices and receives public QR Pool Check enquiries. The anon key is designed for browser use; row-level security in the supplied schema protects private sales data.
+Cloud mode synchronises leads and reviews across Alex's devices and receives public QR Pool Check enquiries. The published key is intentionally browser-safe; row-level security protects private sales data.
 
 ## Core tools
 

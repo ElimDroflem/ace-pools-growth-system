@@ -164,7 +164,9 @@ def discover() -> list[dict]:
 
 def main():
     DATA.mkdir(exist_ok=True)
-    seeds, prior, cache = load(SEEDS, []), load(OUTPUT, {}).get("leads", []), load(CACHE, {})
+    prior_path = Path(os.environ.get("ACE_PRIOR_LEADS", OUTPUT))
+    seeds, prior, cache = load(SEEDS, []), load(prior_path, {}).get("leads", []), load(CACHE, {})
+    prior_by_key = {(item.get("propertyId") or item.get("url") or item.get("id")): item for item in prior}
     origin = geocode(CENTRE_POSTCODE, cache)
     if not origin:
         raise SystemExit("Could not locate Comberton centre")
@@ -180,6 +182,8 @@ def main():
     today = datetime.now(timezone.utc).date()
     for lead in unique.values():
         item = dict(lead)
+        item_key = item.get("propertyId") or item.get("url") or item.get("id")
+        previous = prior_by_key.get(item_key, {})
         text = " ".join(str(item.get(key, "")) for key in ("signal", "pain", "whyNow", "prospect"))
         planning = bool(re.search(r"planning|proposal|application", text, re.I))
         former = bool(re.search(r"former pool|pool removed|convert pool house away", text, re.I))
@@ -202,13 +206,17 @@ def main():
         coords = geocode(item.get("postcode", ""), cache)
         if coords:
             minutes, method = drive_minutes(origin, coords)
+            # A temporary routing outage must not remove a verified property from
+            # the 45-minute territory. Reuse its last successful OSRM route.
+            if method == "estimated" and previous.get("driveMethod") == "OSRM" and previous.get("driveMinutes") is not None:
+                minutes, method = previous["driveMinutes"], "OSRM (last verified)"
             item.update(latitude=round(coords[0], 5), longitude=round(coords[1], 5), driveMinutes=minutes, driveMethod=method, inTerritory=minutes <= MAX_DRIVE_MINUTES)
         else:
             item.update(latitude=None, longitude=None, driveMinutes=None, driveMethod="unverified", inTerritory=False)
 
         total, parts = score(item, item.get("driveMinutes"))
         item.update(score=total, scoreBreakdown=parts, triggerType=parts["triggerType"], triggerStrength=parts["triggerStrength"], contactability=parts["contactability"])
-        actionable = item["poolConfidence"] == "Confirmed" and item["contactability"] in ("Verified", "Available") and item.get("inTerritory")
+        actionable = item["poolConfidence"] == "Confirmed" and item["contactability"] in ("Verified", "Available") and item.get("inTerritory") and item.get("status") != "Verify"
         item["priority"] = "A" if actionable and total >= 72 else "B" if item["poolConfidence"] == "Confirmed" and item.get("inTerritory") else "C"
         item["actNow"] = item["priority"] == "A"
         item["reasoning"] = f"{item['poolConfidence']} {item['poolType'].lower()} pool. {item['triggerType']} trigger. {item['contactability'].lower()} contact route. {item.get('whyNow', '')}"

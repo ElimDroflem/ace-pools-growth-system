@@ -1,64 +1,136 @@
-const contains=(text,pattern)=>pattern.test(text);
+const text = value => String(value || '').toLowerCase();
+const has = (value, pattern) => pattern.test(text(value));
 
-export function assessOpportunity(lead){
-  const text=[lead.whyNow,lead.signal,lead.pain,lead.angle,lead.action,lead.reasoning].filter(Boolean).join(' ').toLowerCase();
-  const ownershipSignal=String(lead.ownershipSignal||'').toLowerCase();
-  const ownershipChange=lead.triggerType==='Ownership change'||contains(`${text} ${ownershipSignal}`,/sold (?:stc|subject to contract)|sale agreed|under offer|post-completion|sstc ownership change/);
-  const activeSale=ownershipChange||['Active sale','Price reduction','Age / condition'].includes(lead.triggerType)&&contains(`${text} ${ownershipSignal}`,/active sale|fresh listing|current sale|chain-free|no-chain|no onward chain|price reduc|selling agent|vendor|buyer introduction|sale pack/);
-  const noProvider=contains(text,/no current (?:care )?provider|no provider (?:is )?visible|no current care|without (?:a )?regular (?:pool )?(?:service|maintenance)|maintenance responsibility gap/);
-  const refresh=lead.triggerType==='Age / condition'||contains(text,/ageing (?:pool|plant|equipment)|older (?:pool|plant|equipment)|pool (?:area )?(?:requiring|needs?) (?:restoration|renovation|refurbishment)|restore the pool|pool restoration|pool renovation|pool refurbishment|modernis(?:e|ing) (?:the )?(?:pool|plant|equipment)|upgrade priorit|wear before failure|what may fail|recommission|decommission|plant condition/);
-  const managed=lead.triggerType==='Managed use'||['Managed short-let','Residential development'].includes(lead.propertyClass);
-  const planning=lead.triggerType==='Planning'||contains(text,/planning application|planning proposal|architect|specification/);
-  const specialist=['Indoor','Both'].includes(lead.poolType);
-
-  const provider=noProvider?25:ownershipChange?20:activeSale?12:managed?10:6;
-  const timing=ownershipChange?20:lead.triggerType==='Active sale'?15:lead.triggerType==='Price reduction'?13:managed?14:planning?12:refresh?10:5;
-  const need=managed?22:refresh?22:specialist?16:lead.poolType==='Outdoor'?12:8;
-  const contact=lead.contactability==='Verified'?10:lead.contactability==='Available'?8:2;
-  const distance=lead.driveMinutes<=10?10:lead.driveMinutes<=20?8:lead.driveMinutes<=30?6:lead.driveMinutes<=45?3:0;
-  const age=Number(lead.evidenceAgeDays),freshness=Number.isFinite(age)?age<=30?10:age<=90?7:age<=180?4:2:3;
-  const multiSignal=(noProvider&&refresh)||(ownershipChange&&refresh)||managed&&specialist?3:0;
-  const score=Math.min(100,provider+timing+need+contact+distance+freshness+multiSignal);
-
-  let type='Maintenance prospect',offer='Complimentary Pool Review',needText='Confirm the current care arrangement, safety baseline and equipment condition.';
-  if(managed){type='Managed maintenance';offer='Documented PoolCare plan';needText='Documented water checks, preventative maintenance and dependable response.';}
-  else if(ownershipChange&&refresh){type='New-owner takeover + refresh';offer='Pool Handover & Modernisation Review';needText='Give the incoming owner a safe operating baseline and separate urgent work from upgrades.';}
-  else if(ownershipChange){type='New-owner takeover';offer='New Owner Pool Handover + PoolCare';needText='Take responsibility from day one with a condition baseline and ongoing maintenance.';}
-  else if(noProvider){type='Maintenance gap';offer='Complimentary Pool Review + PoolCare';needText='Establish regular professional care before small issues become expensive.';}
-  else if(refresh){type='Refresh / upgrade';offer='Pool Condition & Efficiency Review';needText='Identify ageing plant, reliability risks and sensible efficiency improvements.';}
-  else if(activeSale){type='Sale handover';offer='Seller / Buyer Pool Review';needText='Make the pool easier to understand, budget for and take over.';}
-  else if(planning){type='Project and aftercare';offer='Technical Review + Aftercare Plan';needText='Support the project early and establish the future maintenance relationship.';}
-
-  let competition='Unknown',competitionKey='unknown',competitionReason='No reliable evidence about the current provider.';
-  if(noProvider){competition='Low indicated';competitionKey='low';competitionReason='The evidence indicates no current care provider or a maintenance gap.';}
-  else if(ownershipChange){competition='Likely lower';competitionKey='likely-low';competitionReason='A change of ownership often reopens the maintenance decision.';}
-  else if(activeSale){competition='Relationship may change';competitionKey='changing';competitionReason='The seller and incoming owner may have different service arrangements.';}
-
-  const reasons=[];
-  if(noProvider)reasons.push('No current provider is visible');
-  if(ownershipChange)reasons.push('Ownership is changing');
-  else if(lead.triggerType==='Active sale')reasons.push('The property is actively for sale');
-  else if(lead.triggerType==='Price reduction')reasons.push('A price reduction creates urgency');
-  if(refresh)reasons.push('The pool shows a refresh or equipment need');
-  if(managed)reasons.push('The pool is operationally important');
-  if(specialist)reasons.push('Specialist indoor or multi-pool plant');
-  if(lead.driveMinutes<=20)reasons.push(`${lead.driveMinutes} minutes from Comberton`);
-  if(!reasons.length)reasons.push('Confirmed local pool property with an available contact route');
-
-  const tags=[];
-  if(ownershipChange)tags.push('New-owner window');
-  if(noProvider)tags.push('Low competition signal');
-  if(refresh)tags.push('Refresh opportunity');
-  if(managed)tags.push('Recurring contract');
-  if(activeSale&&!ownershipChange)tags.push('Active sale');
-  if(specialist)tags.push('Specialist plant');
-  if(!tags.length)tags.push('Maintenance prospect');
-
-  const tier=score>=80?'Speak today':score>=65?'Strong opportunity':score>=50?'Worth researching':'Hold';
-  const tierKey=score>=80?'hot':score>=65?'strong':score>=50?'research':'hold';
-  return{score,tier,tierKey,type,offer,needText,competition,competitionKey,competitionReason,reasons:reasons.slice(0,3),tags,flags:{ownershipChange,activeSale,noProvider,refresh,managed,planning,specialist},breakdown:{provider,timing,need,contact,distance,freshness,multiSignal}};
+function poolLabel(lead) {
+  if (lead.poolType === 'Indoor') return 'indoor pool';
+  if (lead.poolType === 'Outdoor') return 'outdoor pool';
+  if (lead.poolType === 'Both') return 'indoor and outdoor pools';
+  return 'swimming pool';
 }
 
-export function isQualifiedProperty(lead){
-  return lead.poolConfidence==='Confirmed'&&lead.inTerritory===true&&['Verified','Available'].includes(lead.contactability);
+function poolPhrase(lead) {
+  if (lead.poolType === 'Indoor') return 'an indoor pool';
+  if (lead.poolType === 'Outdoor') return 'an outdoor pool';
+  if (lead.poolType === 'Both') return 'indoor and outdoor pools';
+  return 'a swimming pool';
+}
+
+function ownershipStatus(lead) {
+  const source = `${lead.ownershipSignal || ''} ${lead.signal || ''}`;
+  if (has(source, /sale agreed/)) return 'Sale agreed';
+  if (has(source, /under offer/)) return 'Under offer';
+  if (has(source, /sold (?:stc|subject to contract)/)) return 'Sold STC';
+  return lead.triggerType === 'Ownership change' ? 'Ownership changing' : '';
+}
+
+export function assessOpportunity(lead) {
+  const signal = text(lead.signal);
+  const status = ownershipStatus(lead);
+  const ownershipChange = Boolean(status);
+  const managed = ['Managed short-let', 'Residential development'].includes(lead.propertyClass) || lead.triggerType === 'Managed use';
+  const priceReduced = lead.triggerType === 'Price reduction' || has(signal, /\breduced\b|price reduction/);
+  const activeSale = ownershipChange || priceReduced || lead.triggerType === 'Active sale' || has(signal, /(?:fresh|new|current|active|chain-free|no-chain|no onward chain).{0,18}(?:sale|listing)/);
+  const explicitPoolCondition = has(signal, /(?:pool|plant|filter|boiler|heater|cover).{0,55}(?:weathered|restoration|repair|replacement|recommission|decommission|not working|updating required)|(?:weathered|restore|restoration|repair|replace|recommission|decommission).{0,55}(?:pool|plant|filter|boiler|heater|cover)/);
+  const specialist = ['Indoor', 'Both'].includes(lead.poolType);
+  const needsVerification = lead.status === 'Verify';
+  const directContact = lead.contactability === 'Verified';
+  const pool = poolLabel(lead);
+  const poolWithArticle = poolPhrase(lead);
+
+  let reasonText;
+  let painText;
+  let offer;
+  let opener;
+  let opportunityType;
+
+  if (needsVerification) {
+    opportunityType = 'Research first';
+    reasonText = `This property has a confirmed ${pool}, but the current trigger needs checking.`;
+    painText = 'No immediate customer problem is proven yet.';
+    offer = 'Verify before contact';
+    opener = 'Confirm the current owner, sales status and pool-care arrangement before making an offer.';
+  } else if (managed) {
+    opportunityType = 'Managed pool';
+    reasonText = lead.propertyClass === 'Managed short-let'
+      ? `Paying guests regularly use this ${pool}.`
+      : `Residents share this managed ${pool}.`;
+    painText = lead.propertyClass === 'Managed short-let'
+      ? 'A breakdown or water-quality problem could disrupt bookings and damage reviews.'
+      : 'The management company needs the shared pool to stay safe, reliable and properly documented.';
+    offer = 'Documented PoolCare plan';
+    opener = 'I help managed properties keep pools safe, documented and available. Who currently looks after the pool?';
+  } else if (ownershipChange && explicitPoolCondition) {
+    opportunityType = 'New owner + pool work';
+    reasonText = `${status}: a buyer is taking over a home where the pool is described as needing work.`;
+    painText = 'The buyer may inherit an unusable pool and need a clear repair plan before spending elsewhere.';
+    offer = 'Pool Handover & Repair Plan';
+    opener = 'I help buyers make inherited pools safe and usable. Could I send the buyer a short handover and repair offer?';
+  } else if (ownershipChange) {
+    opportunityType = 'New owner';
+    reasonText = `${status}: a buyer is taking over a home with ${poolWithArticle}.`;
+    painText = "The buyer may not know the pool's condition, running costs or maintenance history.";
+    offer = 'New Owner Pool Handover';
+    opener = 'I help buyers understand and take over pools safely. Could I send you a short handover offer for the buyer?';
+  } else if (explicitPoolCondition) {
+    opportunityType = 'Pool needs work';
+    reasonText = `The property information describes the ${pool} or its equipment as needing work.`;
+    painText = 'Delaying the work could increase repair costs or leave the pool unusable.';
+    offer = 'Pool Condition & Repair Review';
+    opener = 'I separate urgent pool repairs from optional improvements. Would the owner find a simple condition review useful?';
+  } else if (activeSale) {
+    opportunityType = 'Sale handover';
+    reasonText = priceReduced
+      ? `The home is still for sale after a price reduction and includes ${poolWithArticle}.`
+      : `The home is currently for sale with ${poolWithArticle}.`;
+    painText = specialist
+      ? 'The seller or buyer may need help understanding specialist plant, maintenance and running costs.'
+      : 'The seller or buyer may need a simple pool condition and maintenance handover.';
+    offer = 'Seller / Buyer Pool Review';
+    opener = 'I provide simple pool handovers for sellers and buyers. Would that be useful for this property?';
+  } else {
+    opportunityType = 'Research first';
+    reasonText = `This property is known to have ${poolWithArticle}, but there is no fresh buying trigger.`;
+    painText = 'No immediate pain is proven. Check the owner and current maintenance arrangement first.';
+    offer = 'Research before contact';
+    opener = 'Confirm the owner and current pool-care arrangement before making an offer.';
+  }
+
+  const intent = needsVerification ? 0 : ownershipChange ? 30 : managed ? 26 : explicitPoolCondition ? 24 : activeSale ? 20 : 4;
+  const need = explicitPoolCondition ? 24 : managed ? 22 : ownershipChange ? 16 : specialist ? 12 : 8;
+  const contact = directContact ? 14 : lead.contactability === 'Available' ? 6 : 0;
+  const distance = lead.driveMinutes <= 10 ? 10 : lead.driveMinutes <= 20 ? 8 : lead.driveMinutes <= 30 ? 6 : lead.driveMinutes <= 45 ? 3 : 0;
+  const evidenceAge = Number(lead.evidenceAgeDays);
+  const freshness = Number.isFinite(evidenceAge) ? evidenceAge <= 30 ? 10 : evidenceAge <= 90 ? 6 : evidenceAge <= 180 ? 3 : 0 : 0;
+  const multiSignal = ownershipChange && explicitPoolCondition ? 6 : managed && specialist ? 4 : 0;
+  const score = Math.max(0, Math.min(100, intent + need + contact + distance + freshness + multiSignal));
+  const ready = !needsVerification && score >= 55 && (ownershipChange || managed || explicitPoolCondition || activeSale);
+  const tier = score >= 75 ? 'Start today' : ready ? 'Good prospect' : 'Research first';
+  const tierKey = score >= 75 ? 'hot' : ready ? 'strong' : 'research';
+
+  const tags = [];
+  if (ownershipChange) tags.push('New owner');
+  if (managed) tags.push('Managed pool');
+  if (explicitPoolCondition) tags.push('Pool work mentioned');
+  if (activeSale && !ownershipChange) tags.push('For sale');
+  if (!ready) tags.push('Research first');
+
+  return {
+    score,
+    tier,
+    tierKey,
+    ready,
+    opportunityType,
+    reasonText,
+    painText,
+    offer,
+    opener,
+    routeType: directContact ? 'Direct contact' : 'Agent or address route',
+    tags,
+    flags: { ownershipChange, managed, explicitPoolCondition, activeSale, priceReduced, specialist, needsVerification },
+    breakdown: { intent, need, contact, distance, freshness, multiSignal }
+  };
+}
+
+export function isQualifiedProperty(lead) {
+  return lead.poolConfidence === 'Confirmed' && lead.inTerritory === true && ['Verified', 'Available'].includes(lead.contactability);
 }

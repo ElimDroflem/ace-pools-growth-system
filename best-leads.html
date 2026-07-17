@@ -1,9 +1,72 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Best Leads | Ace Pools</title><link rel="stylesheet" href="assets/styles.css"><link rel="stylesheet" href="assets/best-leads.css"></head><body><div class="shell">
-<header class="simple-nav"><a class="brand" href="best-leads.html">ACE POOLS</a><nav><a class="active" href="best-leads.html">Best leads</a><a href="dashboard.html">Pipeline</a><a href="customers.html">Customers</a></nav></header>
-<main><section class="best-heading"><div><div class="eyebrow">DAILY OPPORTUNITY LIST</div><h1>Who Alex should speak to today.</h1><p id="leadSheetStatus">Loading the strongest confirmed pool opportunities…</p></div><div class="actions"><a class="btn" href="lead-map.html">View map</a><a class="btn btn-aqua" href="assessment.html">Free assessment</a></div></section>
-<section class="lead-sheet-kpis"><div><b id="qualifiedCount">–</b><span>Qualified properties</span></div><div><b id="speakTodayCount">–</b><span>Speak today</span></div><div><b id="ownershipCount">–</b><span>New-owner windows</span></div><div><b id="lowCompetitionCount">–</b><span>Lower competition</span></div></section>
-<section id="topOpportunity"></section>
-<section class="lead-sheet-controls"><div><label for="leadView">Show</label><select id="leadView"><option value="best">Best opportunities</option><option value="ownership">New-owner windows</option><option value="competition">Lower competition</option><option value="maintenance">Maintenance opportunities</option><option value="refresh">Refresh and upgrade</option><option value="managed">Managed pools</option><option value="nearest">Nearest first</option></select></div><label class="include-worked"><input id="includeWorked" type="checkbox"> Include leads already in Pipeline</label></section>
-<section class="ranked-section"><div class="ranked-title"><div><h2>Ranked lead sheet</h2><p>Only confirmed pool properties with a usable contact route are shown.</p></div><small id="dataFreshness"></small></div><div id="rankedLeads" class="ranked-leads"></div></section>
-</main><footer class="footer">The score prioritises opportunity—not certainty. Check the evidence before making contact.</footer></div><script type="module" src="assets/best-leads.js?v=1"></script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Find Leads | Ace Pools</title>
+  <link rel="stylesheet" href="assets/styles.css">
+  <link rel="stylesheet" href="assets/best-leads.css">
+</head>
+<body>
+  <div class="shell">
+    <header class="simple-nav">
+      <a class="brand" href="best-leads.html">ACE POOLS</a>
+      <nav>
+        <a class="active" href="best-leads.html">Find leads</a>
+        <a href="dashboard.html">Follow-ups</a>
+        <a href="customers.html">Customers</a>
+      </nav>
+    </header>
 
+    <main>
+      <section class="leadgen-heading">
+        <div>
+          <div class="eyebrow">DAILY LEAD FINDER</div>
+          <h1>Who should Alex contact today?</h1>
+          <p>Start at number one. See what happened, the problem they may have and exactly what to offer.</p>
+        </div>
+        <div class="actions">
+          <a class="btn" href="lead-map.html">View map</a>
+          <a class="btn btn-aqua" href="assessment.html">Free Pool Check</a>
+        </div>
+      </section>
+
+      <section class="daily-summary" aria-label="Daily prospecting summary">
+        <strong>Today’s target: start 5 conversations.</strong>
+        <span><b id="readyCount">–</b> ready to approach</span>
+        <span><b id="newOwnerCount">–</b> new-owner opportunities</span>
+        <span><b id="researchCount">–</b> need research first</span>
+      </section>
+
+      <section id="topLead"></section>
+
+      <section class="lead-controls">
+        <label for="leadView">Show</label>
+        <select id="leadView">
+          <option value="ready">Ready to approach</option>
+          <option value="ownership">New owners</option>
+          <option value="condition">Pool work mentioned</option>
+          <option value="managed">Managed pools</option>
+          <option value="research">Research first</option>
+          <option value="all">All confirmed pool properties</option>
+        </select>
+        <label class="include-worked"><input id="includeWorked" type="checkbox"> Include leads already in Follow-ups</label>
+      </section>
+
+      <section class="lead-list-section">
+        <div class="list-heading">
+          <div>
+            <h2 id="listTitle">Ready to approach</h2>
+            <p id="leadStatus">Loading today’s best prospects…</p>
+          </div>
+          <small id="dataFreshness"></small>
+        </div>
+        <div id="leadList" class="lead-list"></div>
+      </section>
+    </main>
+
+    <footer class="footer">“Why now” is a public trigger. “Problem they may have” is a sales hypothesis Alex should test—not an assumed fact.</footer>
+  </div>
+  <script type="module" src="assets/best-leads.js?v=3"></script>
+</body>
+</html>

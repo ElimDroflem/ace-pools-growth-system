@@ -5,13 +5,13 @@
     "area": "Letchworth Garden City",
     "postcode": "SG6",
     "county": "Hertfordshire",
-    "signal": "Sale agreed; owners occupied 29 years; pool-related upgrades around 25 years old",
-    "pain": "Ageing equipment and undocumented maintenance history",
-    "offer": "Pool Handover + equipment lifecycle plan",
-    "whyNow": "Fast sale means buyer will soon assume an older leisure asset",
+    "signal": "Sale agreed within four days; listing confirms a swimming pool; the age and condition of the pool equipment are not stated",
+    "pain": "The incoming buyer may not know the pool's condition, running costs or maintenance history",
+    "offer": "New Owner Pool Handover",
+    "whyNow": "Sale agreed: a buyer will soon take over a home with a pool",
     "route": "Michael Graham → buyer introduction",
-    "angle": "The house is sold; the buyer now needs to know what the pool will cost and what may fail first.",
-    "action": "Ask agent to introduce a pre-completion specialist review.",
+    "angle": "I help buyers understand a pool before they take responsibility for it. Could I send you a short handover offer for the buyer?",
+    "action": "Ask the agent to pass a New Owner Pool Handover offer to the buyer.",
     "url": "https://www.rightmove.co.uk/properties/174377321",
     "baseScore": 98
   },
@@ -37,13 +37,13 @@
     "area": "High Roding",
     "postcode": "CM6",
     "county": "Essex",
-    "signal": "Under offer; pool at property explicitly requiring modernisation",
-    "pain": "Likely recommissioning, safety and equipment-renewal work",
-    "offer": "Pool Renovation & Care Assessment",
-    "whyNow": "Buyer is acquiring a project property with a pool",
+    "signal": "Under offer; listing confirms a swimming pool; the farmhouse, rather than the pool, is described as requiring modernisation",
+    "pain": "The buyer may not know the pool's condition, operating costs or maintenance history",
+    "offer": "New Owner Pool Handover",
+    "whyNow": "Under offer: a buyer is taking over a project property with a pool",
     "route": "Selling agent → buyer introduction",
-    "angle": "Separate urgent pool work from optional renovation before the buyer commits budget elsewhere.",
-    "action": "Call agent with buyer handover and modernisation proposition.",
+    "angle": "I help buyers establish the condition and care requirements of an inherited pool. Could I send the buyer a short handover offer?",
+    "action": "Ask the selling agent to pass a New Owner Pool Handover offer to the buyer.",
     "url": "https://www.rightmove.co.uk/properties/174261014",
     "baseScore": 97
   },
@@ -117,13 +117,13 @@
     "area": "Barley / Royston",
     "postcode": "SG8",
     "county": "Hertfordshire",
-    "signal": "No onward chain; indoor pool; buyer may remodel",
-    "pain": "Pool may be altered during wider renovation",
-    "offer": "Pool Feasibility & Care Review",
-    "whyNow": "Remodelling choices likely immediately after purchase",
+    "signal": "No onward chain; listing confirms an indoor pool; the pool's condition and maintenance arrangement are not stated",
+    "pain": "A buyer may need help understanding the indoor pool before deciding what to retain or change",
+    "offer": "Buyer Pool Condition Review",
+    "whyNow": "No-onward-chain sale: a buyer may soon take over an indoor pool",
     "route": "Selling agent → buyer",
-    "angle": "Decide what to retain and modernise before architects lock the wider renovation scope.",
-    "action": "Request buyer/architect introduction.",
+    "angle": "I help buyers understand an indoor pool's condition and running requirements before making wider plans.",
+    "action": "Ask the selling agent to pass a Buyer Pool Condition Review to interested purchasers.",
     "url": "https://www.onthemarket.com/details/19207183/",
     "baseScore": 95
   },
@@ -976,10 +976,10 @@
     "id": "seed-074", "propertyId": "cb4-2hd-54-roseford-road", "prospect": "54 Roseford Road", "area": "Cambridge", "postcode": "CB4 2HD", "county": "Cambridgeshire", "signal": "Active managed short-let publicly advertises a private heated indoor pool used by families and guests", "pain": "Guest turnover makes water safety, proof of checks, uptime and rapid fault response commercially critical", "offer": "Managed PoolCare Concierge", "whyNow": "The pool is revenue-critical and visible to every guest; downtime or a water-quality problem risks bookings and reviews", "route": "Cambridge Homehost / booking property manager", "angle": "Protect every guest stay with documented water checks, preventative maintenance and priority response.", "action": "Contact the property manager with a sample digital visit report and request a 15-minute operational review.", "url": "https://www.booking.com/hotel/gb/stunning-city-home-with-indoor-pool-amp-cinema-room-cambridge.en-gb.html", "poolType": "Indoor", "poolConfidence": "Confirmed", "propertyClass": "Managed short-let", "evidenceDate": "2026-07-11", "locationPrecision": "Full postcode", "baseScore": 94
   },
   {
-    "id": "seed-075", "propertyId": "cb24-8rd-3-manor-farm-court", "prospect": "3 Manor Farm Court", "area": "Cottenham", "postcode": "CB24 8RD", "county": "Cambridgeshire", "signal": "Public property record confirms an indoor heated Endless Pool installed at significant cost", "pain": "Specialist counter-current equipment and indoor environment need ongoing calibration, servicing and a current condition baseline", "offer": "Endless Pool Condition Review + PoolCare", "whyNow": "Known installed pool with no current care provider visible; close enough to fit a dense Cambridge route", "route": "Verify current ownership then addressed local letter", "angle": "Keep the specialist swim system safe, calibrated and ready without the owner managing it themselves.", "action": "Verify current owner/contact route, then send the local Pool Review letter and follow with a doorstep introduction.", "url": "https://www.allagents.co.uk/properties/view/3-manor-farm-court-cottenham-cambridge/6-bedroom-for-sale/id/36494", "poolType": "Indoor", "poolConfidence": "Confirmed", "propertyClass": "Private home", "evidenceDate": "2026-07-11", "locationPrecision": "Full postcode", "baseScore": 82
+    "id": "seed-075", "propertyId": "cb24-8rd-3-manor-farm-court", "prospect": "3 Manor Farm Court", "area": "Cottenham", "postcode": "CB24 8RD", "county": "Cambridgeshire", "signal": "Historic property listing confirms an indoor heated Endless Pool; current ownership and maintenance arrangements are unknown", "pain": "No immediate problem is proven; the specialist pool system may still require ongoing care", "offer": "Research before contact", "whyNow": "Known pool property close to Comberton, but there is no fresh buying trigger", "route": "Verify current ownership before any contact", "angle": "Confirm the owner and current pool-care arrangement before making an offer.", "action": "Verify the current owner, listing status and pool-care arrangement.", "url": "https://www.allagents.co.uk/properties/view/3-manor-farm-court-cottenham-cambridge/6-bedroom-for-sale/id/36494", "poolType": "Indoor", "poolConfidence": "Confirmed", "propertyClass": "Private home", "evidenceDate": "2026-07-11", "locationPrecision": "Full postcode", "baseScore": 82
   },
   {
-    "id": "seed-076", "propertyId": "pe19-yelling-high-street-pool", "prospect": "High Street pool property", "area": "Yelling", "postcode": "PE19 6SD", "county": "Cambridgeshire", "signal": "Sold subject to contract; listing describes a large weathered swimming-pool area requiring restoration", "pain": "The incoming owner faces immediate safety, recommissioning and renovation decisions", "offer": "Make-Safe & Pool Renovation Plan", "whyNow": "SSTC ownership change and explicit restoration need create an urgent post-completion project", "route": "Connells St Neots → buyer introduction", "angle": "Separate the urgent safety work from the renovation options before the buyer allocates the wider property budget.", "action": "Call Connells St Neots and request a buyer introduction for a phased make-safe and renovation review.", "url": "https://www.connells.co.uk/properties/20898890/sales/SNT305491", "poolType": "Outdoor", "poolConfidence": "Confirmed", "propertyClass": "Private home", "evidenceDate": "2026-07-11", "locationPrecision": "Street postcode", "baseScore": 96
+    "id": "seed-076", "propertyId": "pe19-yelling-high-street-pool", "prospect": "High Street pool property", "area": "Yelling", "postcode": "PE19 6SD", "county": "Cambridgeshire", "signal": "Previous listing described a weathered swimming-pool area requiring restoration; the original listing is no longer available", "pain": "The pool may need restoration, but the current owner and project status must be checked first", "offer": "Research before contact", "whyNow": "Promising restoration lead, but the original sales evidence now needs rechecking", "route": "Re-verify the property and current owner", "angle": "Confirm the current owner and whether the pool still requires restoration before making an offer.", "action": "Re-verify the listing, ownership and restoration need before outreach.", "url": "https://www.connells.co.uk/properties/20898890/sales/SNT305491", "poolType": "Outdoor", "poolConfidence": "Confirmed", "propertyClass": "Private home", "status": "Verify", "evidenceDate": "2026-07-11", "locationPrecision": "Street postcode", "baseScore": 96
   },
   {
     "id": "seed-077", "propertyId": "pe27-holywell-house", "prospect": "Holywell House residential pool", "area": "Holywell / St Ives", "postcode": "PE27", "county": "Cambridgeshire", "signal": "Residential development listings confirm a communal heated swimming pool managed for property owners", "pain": "A communal pool carries recurring safety, record-keeping, service-continuity and management-company accountability needs", "offer": "Communal Pool Compliance & Care Review", "whyNow": "One management-company relationship could secure a recurring multi-household pool contract", "route": "Holywell House management company / selling agents", "angle": "Give every resident and director visible proof that water safety, plant and maintenance are under control.", "action": "Identify the management company from public property records and request a board-level service review.", "url": "https://www.rightmove.co.uk/properties/165789419", "poolType": "Outdoor", "poolConfidence": "Confirmed", "propertyClass": "Residential development", "evidenceDate": "2026-07-11", "baseScore": 88

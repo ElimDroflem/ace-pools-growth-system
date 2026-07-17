@@ -1,16 +1,16 @@
 # Ace Pools platform
 
-Live platform: `https://ace-pools-growth-system.vercel.app/dashboard.html`
+Live platform: `https://ace-pools-growth-system.vercel.app/`
 
 ## The whole workflow
 
-1. **Find leads:** choose a confirmed local pool property and add it to Pipeline.
+1. **Best Leads:** open the ranked daily list and choose the highest opportunity. Each lead explains why now, the likely need, competition level and the best opening offer.
 2. **Pipeline:** open the opportunity shown at the top, make contact and save the next step.
 3. **Pool Review and proposal:** complete the on-site review from the opportunity. The proposal is created automatically.
 4. **Win the work:** change the opportunity to Won. A customer record is created automatically.
 5. **Customers:** complete onboarding, record every service visit, track upgrades and renewals.
 
-The only main screens are **Find Leads**, **Pipeline** and **Customers**. Reviews, proposals, onboarding and service reports appear only when they are needed.
+The only main screens are **Best Leads**, **Pipeline** and **Customers**. The map is available from Best Leads when Alex wants to plan a local door-to-door route. Reviews, proposals, onboarding and service reports appear only when they are needed.
 
 ## Occasional tools
 

@@ -5,7 +5,7 @@
   "installCommand": "",
   "outputDirectory": ".",
   "rewrites": [
-    { "source": "/", "destination": "/dashboard.html" }
+    { "source": "/", "destination": "/best-leads.html" }
   ],
   "headers": [
     {

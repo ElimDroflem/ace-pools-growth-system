@@ -1,4 +1,4 @@
-import { assessOpportunity, isQualifiedProperty } from './opportunity-score.js';
+import { assessOpportunity, isQualifiedProperty } from './opportunity-score.js?v=2';
 
 const $ = id => document.getElementById(id);
 const esc = value => String(value ?? '').replace(/[&<>'"]/g, character => ({
